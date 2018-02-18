@@ -30,3 +30,5 @@ export const throttle = time => {
     }, time);
   };
 };
+
+export const createStream = (...args) => cb => compose(...args, cb)

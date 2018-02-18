@@ -1,4 +1,4 @@
-import { map, filter, compose } from './pew'
+import { map, filter, createStream, compose } from './pew'
 import readline from 'readline'
 import fetch from 'node-fetch'
 
@@ -10,8 +10,14 @@ const duckduck = async q => fetch(`https://api.duckduckgo.com/?q=${q}&format=jso
 const onLine = rl.on.bind(rl, 'line')
 const echo = async q => 'C: ' + q
 
-compose(
+const xyz = createStream(
   onLine,
-  duckduck,
+  echo
+)
+
+xyz(console.log)
+compose(
+  xyz,
+  map(c => 'aa => ' + c),
   console.log
 )
