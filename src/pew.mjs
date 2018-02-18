@@ -2,8 +2,6 @@ export const map = iter => cb => v => cb(iter(v))
 
 export const filter = iter => cb => v => iter(v) && cb(v)
 
-const doThing = fn => cb => v => fn(v).then(cb)
-
 function isAsync(fn) {
   return fn.constructor.name === 'AsyncFunction'
 }
