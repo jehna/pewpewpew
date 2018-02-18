@@ -31,4 +31,9 @@ export const throttle = time => {
   }
 }
 
+export const tap = tapper => cb => v => {
+  tapper(v)
+  cb(v)
+}
+
 export const createStream = (...args) => cb => compose(...args, cb)
