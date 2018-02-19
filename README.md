@@ -22,7 +22,7 @@ This will install pewpewpew as a dependency to your current project. After that
 you can just include the functions you need with standard ES module imports:
 
 ```js
-import { compose, map } from 'pewpewpew'
+import { compose, map } from '@pewpewpew/core'
 
 compose(
   document.body.addEventListener.bind(null, 'click'),
@@ -42,7 +42,7 @@ handling React's local state:
 
 ```js
 import React from 'react'
-import { compose, throttle, map } from 'pewpewpew'
+import { compose, throttle, map } from '@pewpewpew/core'
 import { bind } from '@pewpewpew/react'
 
 function MyCounter (increment, incrementThrottled, value) {

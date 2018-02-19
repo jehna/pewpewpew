@@ -1,5 +1,5 @@
 import { bind } from '../src/react-wrapper.mjs'
-import { map, compose, throttle } from '../src/pew.mjs'
+import { map, compose, throttle } from '@pewpewpew/core'
 import { expect } from 'chai'
 import { shallow } from 'enzyme'
 import sinon, { spy } from 'sinon'
