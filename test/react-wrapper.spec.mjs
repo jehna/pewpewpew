@@ -36,7 +36,7 @@ describe('bind', () => {
     it('should call mapStateToProps with initial state', () => {
       const mapStateToProps = new spy()
       const initialState = { hello: 'world' }
-      const Bound = bind(mapStateToProps, null, initialState)(Test)
+      const Bound = bind(mapStateToProps, initialState)(Test)
 
       shallow(React.createElement(Bound, null))
 
@@ -47,18 +47,18 @@ describe('bind', () => {
     it('should set prop from mapStateToProps', () => {
       const mapStateToProps = state => ({ myProp: state.hello })
       const initialState = { hello: 'world' }
-      const Bound = bind(mapStateToProps, null, initialState)(Test)
+      const Bound = bind(mapStateToProps, initialState)(Test)
       const wrapper = shallow(React.createElement(Bound, null))
 
       expect(wrapper.find(Test).props()).to.include({ myProp: 'world' })
     })
 
     it('should change state when prop called correctly', () => {
-      const mapStateToProps = state => ({ myProp: state.hello })
-      const mapSetStateToProps = setState => ({
+      const mapStateToProps = (state, setState) => ({
+        myProp: state.hello,
         setHello: newHello => setState({ hello: newHello })
       })
-      const Bound = bind(mapStateToProps, mapSetStateToProps)(Test)
+      const Bound = bind(mapStateToProps)(Test)
       const wrapper = shallow(React.createElement(Bound, null))
       const expected = 'expected new value'
 
@@ -71,14 +71,14 @@ describe('bind', () => {
 
   context('usage with compose', () => {
     const Test = () => React.createElement('div', null)
-    const mapStateToProps = state => ({ myProp: state.hello })
     const mapHello = map(hello => ({ hello }))
 
-    it('should work fine with mapSetStateToProps', () => {
-      const mapSetStateToProps = setState => ({
-        setHello: compose(mapHello, setState)
+    it('should work fine with mapStateToProps', () => {
+      const mapStateToProps = (state, setState) => ({
+        setHello: compose(mapHello, setState),
+        myProp: state.hello
       })
-      const Bound = bind(mapStateToProps, mapSetStateToProps)(Test)
+      const Bound = bind(mapStateToProps)(Test)
       const wrapper = shallow(React.createElement(Bound, null))
       const expected = 'expected new value'
 
@@ -89,10 +89,11 @@ describe('bind', () => {
     })
 
     it('should throttle values fine', () => {
-      const mapSetStateToProps = setState => ({
-        setHello: compose(throttle(10), mapHello, setState)
+      const mapStateToProps = (state, setState) => ({
+        setHello: compose(throttle(10), mapHello, setState),
+        myProp: state.hello
       })
-      const Bound = bind(mapStateToProps, mapSetStateToProps)(Test)
+      const Bound = bind(mapStateToProps)(Test)
       const wrapper = shallow(React.createElement(Bound, null))
       const expected = 'expected new value'
       const setHello = wrapper.find(Test).prop('setHello')
@@ -107,10 +108,11 @@ describe('bind', () => {
 
     it('should compose the setState as well', async () => {
       const callAfterSetState = new spy()
-      const mapSetStateToProps = setState => ({
-        setHello: compose(mapHello, setState, callAfterSetState)
+      const mapStateToProps = (state, setState) => ({
+        setHello: compose(mapHello, setState, callAfterSetState),
+        myProp: state.hello
       })
-      const Bound = bind(mapStateToProps, mapSetStateToProps)(Test)
+      const Bound = bind(mapStateToProps)(Test)
       const wrapper = shallow(React.createElement(Bound, null))
       const expected = 'expected new value'
       const setHello = wrapper.find(Test).prop('setHello')

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-export function bind(mapStateToProps, mapSetStateToProps, initialState = {}) {
+export function bind(mapStateToProps, initialState = {}) {
   return TargetComponent =>
     class extends Component {
       constructor(props) {
@@ -13,10 +13,10 @@ export function bind(mapStateToProps, mapSetStateToProps, initialState = {}) {
         const setState = async v =>
           new Promise(resolve => this.setState(v, () => resolve(v)))
 
-        return React.createElement(TargetComponent, {
-          ...(mapStateToProps ? mapStateToProps(state) : {}),
-          ...(mapSetStateToProps ? mapSetStateToProps(setState) : {})
-        })
+        return React.createElement(
+          TargetComponent,
+          mapStateToProps ? mapStateToProps(state, setState) : null
+        )
       }
     }
 }

@@ -35,6 +35,51 @@ This example script imports the `compose` and `map` functions from the pewpewpew
 package, starts listening to any `click` events happening at the page, and
 reports the HTML of any clicked element to the console.
 
+### React example
+
+Here's a React example, since this project includes a functional wrapper for
+handling React's local state:
+
+```js
+import React from 'react'
+import { compose, throttle, map } from 'pewpewpew'
+import { bind } from '@pewpewpew/react'
+
+function MyCounter (increment, incrementThrottled, value) {
+  return (
+    <div>
+      <button type="button" onClick={increment}>Add one</button>
+      <button type="button" onClick={incrementThrottled}>Add one (throttled)</button>
+      <div>
+        Value: {value}
+      </div>
+    </div>
+  )
+}
+
+function mapStateToProps ({ value }, setState) {
+  return {
+    value,
+    increment: () => setState({ value: value + 1 })
+    incrementThrottled: compose(
+      throttle(300),
+      setState({ value: value + 1 })
+    )
+  }
+}
+
+export default bind(mapStateToProps, { value: 0 })(MyCounter)
+```
+
+This creates a simple counter that displays a value. You have two buttons to
+increment the counter: One that increments every time, and one that increments
+only once every 300 milliseconds.
+
+With pewpewpew you can easily create functional streams that can be throttled,
+debounced, mapped, tapped and bound to a component.
+
+Never write ugly React component states again! Just use pewpewpew.
+
 ## Testing
 
 The test site should cover a lot of use cases. You can run the tests by running:
