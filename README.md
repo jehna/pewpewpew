@@ -37,43 +37,16 @@ reports the HTML of any clicked element to the console.
 
 ### React example
 
-Here's a React example, since this project includes a functional wrapper for
-handling React's local state:
+You can find React examples from the folder `packages/example-react-counter/`
+and `packages/example-react-github-jobs/`.
 
-```js
-import React from 'react'
-import { compose, throttle, map } from '@pewpewpew/core'
-import { bind } from '@pewpewpew/react'
+`example-react-counter` creates a simple counter that displays a value. You have
+two buttons to increment the counter: One that increments every time, and one
+that increments only once every 300 milliseconds.
 
-function MyCounter (increment, incrementThrottled, value) {
-  return (
-    <div>
-      <button type="button" onClick={increment}>Add one</button>
-      <button type="button" onClick={incrementThrottled}>Add one (throttled)</button>
-      <div>
-        Value: {value}
-      </div>
-    </div>
-  )
-}
-
-function mapStateToProps ({ value }, setState) {
-  return {
-    value,
-    increment: () => setState({ value: value + 1 })
-    incrementThrottled: compose(
-      throttle(300),
-      setState({ value: value + 1 })
-    )
-  }
-}
-
-export default bind(mapStateToProps, { value: 0 })(MyCounter)
-```
-
-This creates a simple counter that displays a value. You have two buttons to
-increment the counter: One that increments every time, and one that increments
-only once every 300 milliseconds.
+`example-react-github-jobs` is a simple app that displays a search field where
+you can write, and it fetches content from Gtihub Jobs API based on that query.
+The requests are throttled every 300 milliseconds.
 
 With pewpewpew you can easily create functional streams that can be throttled,
 debounced, mapped, tapped and bound to a component.
