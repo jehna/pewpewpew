@@ -1,0 +1,31 @@
+{
+  "name": "@pewpewpew/example-react-github-jobs",
+  "version": "1.0.0",
+  "description": "Pewpewpew Github Jobs example",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server"
+  },
+  "browserslist": [
+    "> 20%"
+  ],
+  "keywords": [],
+  "author": "Jesse Luoto",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/core": "^7.0.0-beta.40",
+    "@babel/preset-env": "^7.0.0-beta.40",
+    "@babel/preset-react": "^7.0.0-beta.40",
+    "@pewpewpew/core": "^1.0.0",
+    "@pewpewpew/react": "^1.0.0",
+    "babel-cli": "^6.26.0",
+    "babel-loader": "^8.0.0-beta.0",
+    "fetch-jsonp": "^1.1.3",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "webpack": "^3.11.0"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^2.11.1"
+  }
+}

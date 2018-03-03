@@ -1,13 +1,20 @@
+const identity = v => v
+
 export const map = iter => cb => v => cb(iter(v))
 
 export const filter = iter => cb => v => iter(v) && cb(v)
+
+const prop = (value, prop) =>
+  value && value.hasOwnProperty(prop) ? value[prop] : undefined
+
+export const path = steps => map(item => steps.reduce(prop, item))
 
 function isAsync(fn) {
   return fn.constructor.name === 'AsyncFunction'
 }
 
-export const compose = (...fns) =>
-  fns.reduceRight((b, a) => (isAsync(a) ? v => a(v).then(b) : a(b)))
+export const compose = (...fns) => value =>
+  fns.reduceRight((b, a) => (isAsync(a) ? v => a(v).then(b) : a(b)), value)
 
 export const debounce = time => {
   let timeout
@@ -34,4 +41,5 @@ export const tap = tapper => cb => v => {
   cb(v)
 }
 
-export const createStream = (...args) => cb => compose(...args, cb)
+export const createStream = (...args) => value =>
+  compose(cb => cb(value), ...args)(identity)

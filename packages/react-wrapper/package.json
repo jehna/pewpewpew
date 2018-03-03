@@ -2,7 +2,7 @@
   "name": "@pewpewpew/react",
   "version": "1.0.0",
   "description": "React bindings for pewpewpew",
-  "main": "src/index.mjs",
+  "main": "src/react-wrapper.mjs",
   "scripts": {
     "test": "yarn run mocha --compilers js:babel-core/register test/*.mjs"
   },

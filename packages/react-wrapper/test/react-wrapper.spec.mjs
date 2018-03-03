@@ -1,5 +1,5 @@
 import { bind } from '../src/react-wrapper.mjs'
-import { map, compose, throttle } from '@pewpewpew/core'
+import { map, tap, createStream, throttle } from '@pewpewpew/core'
 import { expect } from 'chai'
 import { shallow } from 'enzyme'
 import sinon, { spy } from 'sinon'
@@ -33,67 +33,62 @@ describe('bind', () => {
       expect(wrapper.find(Test)).not.to.be.a('null')
     })
 
-    it('should call mapStateToProps with initial state', () => {
-      const mapStateToProps = new spy()
+    it('should call mapSetStateToProps', () => {
+      const mapSetStateToProps = new spy(() => {})
       const initialState = { hello: 'world' }
-      const Bound = bind(mapStateToProps, initialState)(Test)
+      const Bound = bind(mapSetStateToProps, initialState)(Test)
 
       shallow(React.createElement(Bound, null))
 
-      sinon.assert.calledOnce(mapStateToProps)
-      sinon.assert.calledWith(mapStateToProps, initialState)
+      sinon.assert.calledOnce(mapSetStateToProps)
     })
 
-    it('should set prop from mapStateToProps', () => {
-      const mapStateToProps = state => ({ myProp: state.hello })
+    it('should set prop from initial state', () => {
       const initialState = { hello: 'world' }
-      const Bound = bind(mapStateToProps, initialState)(Test)
+      const Bound = bind(() => ({}), initialState)(Test)
       const wrapper = shallow(React.createElement(Bound, null))
 
-      expect(wrapper.find(Test).props()).to.include({ myProp: 'world' })
+      expect(wrapper.find(Test).props()).to.include(initialState)
     })
 
     it('should change state when prop called correctly', () => {
-      const mapStateToProps = (state, setState) => ({
-        myProp: state.hello,
-        setHello: newHello => setState({ hello: newHello })
+      const mapSetStateToProps = setState => ({
+        setHello: hello => setState({ hello })
       })
-      const Bound = bind(mapStateToProps)(Test)
+      const Bound = bind(mapSetStateToProps)(Test)
       const wrapper = shallow(React.createElement(Bound, null))
       const expected = 'expected new value'
 
       wrapper.find(Test).prop('setHello')(expected)
       wrapper.update()
 
-      expect(wrapper.find(Test).prop('myProp')).to.eql(expected)
+      expect(wrapper.find(Test).prop('hello')).to.eql(expected)
     })
   })
 
-  context('usage with compose', () => {
+  context('usage with createStream', () => {
     const Test = () => React.createElement('div', null)
     const mapHello = map(hello => ({ hello }))
 
-    it('should work fine with mapStateToProps', () => {
-      const mapStateToProps = (state, setState) => ({
-        setHello: compose(mapHello, setState),
-        myProp: state.hello
+    it('should work fine with mapSetStateToProps', () => {
+      const mapSetStateToProps = setState => ({
+        setHello: createStream(mapHello, setState)
       })
-      const Bound = bind(mapStateToProps)(Test)
+      const Bound = bind(mapSetStateToProps)(Test)
       const wrapper = shallow(React.createElement(Bound, null))
       const expected = 'expected new value'
 
       wrapper.find(Test).prop('setHello')(expected)
       wrapper.update()
 
-      expect(wrapper.find(Test).prop('myProp')).to.eql(expected)
+      expect(wrapper.find(Test).prop('hello')).to.eql(expected)
     })
 
     it('should throttle values fine', () => {
-      const mapStateToProps = (state, setState) => ({
-        setHello: compose(throttle(10), mapHello, setState),
-        myProp: state.hello
+      const mapSetStateToProps = setState => ({
+        setHello: createStream(throttle(10), mapHello, setState)
       })
-      const Bound = bind(mapStateToProps)(Test)
+      const Bound = bind(mapSetStateToProps)(Test)
       const wrapper = shallow(React.createElement(Bound, null))
       const expected = 'expected new value'
       const setHello = wrapper.find(Test).prop('setHello')
@@ -103,16 +98,15 @@ describe('bind', () => {
       setHello('something else')
       wrapper.update()
 
-      expect(wrapper.find(Test).prop('myProp')).to.eql(expected)
+      expect(wrapper.find(Test).prop('hello')).to.eql(expected)
     })
 
     it('should compose the setState as well', async () => {
       const callAfterSetState = new spy()
-      const mapStateToProps = (state, setState) => ({
-        setHello: compose(mapHello, setState, callAfterSetState),
-        myProp: state.hello
+      const mapSetStateToProps = setState => ({
+        setHello: createStream(mapHello, setState, tap(callAfterSetState))
       })
-      const Bound = bind(mapStateToProps)(Test)
+      const Bound = bind(mapSetStateToProps)(Test)
       const wrapper = shallow(React.createElement(Bound, null))
       const expected = 'expected new value'
       const setHello = wrapper.find(Test).prop('setHello')
@@ -124,7 +118,7 @@ describe('bind', () => {
       sinon.assert.calledOnce(callAfterSetState)
       sinon.assert.calledWith(callAfterSetState, { hello: expected })
 
-      expect(wrapper.find(Test).prop('myProp')).to.eql(expected)
+      expect(wrapper.find(Test).prop('hello')).to.eql(expected)
     })
   })
 })
